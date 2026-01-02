@@ -1,3 +1,4 @@
+
 require("dotenv").config()
 // 1
 const express = require("express")
@@ -24,6 +25,8 @@ fooddeliveryserver.use(express.json())
 fooddeliveryserver.use(routes)
 
 fooddeliveryserver.use("/upload",express.static("./imgUpload"))
+
+fooddeliveryserver.use("/resumes",express.static("./pdfUpload"))
 
 // 3
 const PORT = 4000 || process.env.PORT

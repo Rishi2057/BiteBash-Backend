@@ -10,9 +10,12 @@ const jwtMiddleware = require("./middleware/jwtMiddleware")
 const multerConfig = require("./middleware/multerMiddleware")
 const { addFoodController, getAllFoodController, getFoodlistItemController, deleteFoodController, getHotelMenuController } = require("./controller/foodController")
 const { addOrdersController, getMyOrdersController, getClientOrdersController, updateStatusController, getAllOrdersController, getResOrdersController, getPastOrdersController, getUserOrdersAdminController, getWeeklyOrders } = require("./controller/orderController")
-const { partnerRegisterController, getAllPartnersController, updatePartnerDetailsController, updatePartnerActionController } = require("./controller/partnerRegisterController")
+const { partnerRegisterController, getAllPartnersController, updatePartnerDetailsController, updatePartnerActionController, partnerLoginController } = require("./controller/partnerRegisterController")
 const { updateBannerController, getBannerController } = require("./controller/bannerController")
 const { postReviewController, getAllReviewsController, getUserReview } = require("./controller/reviewController")
+const { addJobController, getAllJobsController, editJobStatusController } = require("./controller/jobsController")
+const pdfMulterConfig = require("./middleware/pdfMulterMiddleWare")
+const { addApplicationController, getApplicantionsController } = require("./controller/applicationController")
 
 
 
@@ -89,6 +92,13 @@ routes.get("/user-review/:itemData",getUserReview)
 
 routes.get("/weekly-orders", getWeeklyOrders);
 
+routes.post("/add-job",addJobController)
+
+routes.get("/get-all-jobs",getAllJobsController)
+
+routes.put("/edit-job-status",editJobStatusController)
+
+routes.get("/get-applicants/:state",getApplicantionsController)
 
 //-------------------- user side ----------------------------------
 // user register
@@ -130,6 +140,9 @@ routes.get("/past-orders",jwtMiddleware, getPastOrdersController)
 // post review
 routes.post("/post-review",jwtMiddleware,multerConfig.single("pic"),postReviewController)
 
+// apply job
+routes.post("/apply-job",pdfMulterConfig.single("resume"),addApplicationController)
+
 // client side
 // --------------------------------------------------------------------------------------------
 
@@ -140,12 +153,16 @@ routes.get("/client-orders/:restuaratName",getClientOrdersController)
 routes.put("/update-status/:id/:status",updateStatusController)
 
 // 
-
+// -----------------------------------------------------------------------------------------------------------------------------------
 // delivery partner register
 routes.post("/register-partner",multerConfig.fields([{ name: "photo", maxCount: 1 },{ name: "document", maxCount: 1 }]),partnerRegisterController)
 
+routes.post("/partner-login",partnerLoginController)
+
 // get all partners
 routes.get("/all-partners",getAllPartnersController)
+
+routes.post("/google-auth",userController.googleAuthController)
 
 module.exports = routes
 

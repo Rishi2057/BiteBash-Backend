@@ -1,4 +1,5 @@
 const partners = require("../model/partnerModel")
+const jwt = require("jsonwebtoken");
 
 exports.partnerRegisterController = async (req, res) => {
     console.log("inside");
@@ -27,6 +28,31 @@ exports.partnerRegisterController = async (req, res) => {
         } catch (error) {
             res.status(500).json(error)
         }
+    }
+}
+
+// login
+exports.partnerLoginController = async (req, res) => {
+    const { email, password } = req.body
+    console.log(email, password);
+
+    try {
+        
+        
+        const existingPartner = await partners.findOne({ email })
+        
+        console.log(existingPartner);
+        if (existingPartner.password == password) {
+            console.log("enterd");
+            const token = jwt.sign({ userMail: existingPartner.email }, process.env.secret)
+            res.status(200).json({ existingPartner, token })
+            console.log("success");
+        } else {
+            res.status(406).json("Password Might Be Incorrect")
+        }
+
+    } catch (error) {
+        res.status(500).json(error)
     }
 }
 
@@ -65,7 +91,7 @@ exports.updatePartnerDetailsController = async (req, res) => {
 exports.updatePartnerActionController = async (req, res) => {
     const { id } = req.params
     console.log(id);
-    const  {actions}  = req.body
+    const { actions } = req.body
     console.log(actions)
 
     try {

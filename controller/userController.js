@@ -25,6 +25,43 @@ exports.userRegisterController = async (req, res) => {
 
 }
 
+exports.googleAuthController = async (req, res) => {
+    // NOTE: Ensure jwt is imported at the top of this file: 
+    // const jwt = require('jsonwebtoken');
+    
+    const { fullName, email, uid, photoURL } = req.body;
+    console.log( fullName, email, uid, photoURL);
+    
+    try {
+        // 1. Find or Create User
+        let user = await users.findOne({ email });
+
+        if (!user) {
+            // New user, save it to the database
+            user = new users({
+                fullName,
+                email,
+                uid,
+                profile: photoURL,
+            });
+
+            await user.save();
+        }
+
+        // 2. Generate JWT (Corrected Line)
+        // Use the 'user' variable for the email
+        const token = jwt.sign({ userMail: user.email }, process.env.secret);
+        
+        // 3. Send Response with User Data and Token
+        // Send the user object (as 'existingUser' for consistency with local login) and the token
+        res.status(200).json({ existingUser: user, token: token });
+
+    } catch (error) {
+        console.error("ERROR IN googleAuthController:", error); // Added console log for debugging
+        res.status(500).json(error);
+    }
+};
+
 
 exports.userLogincontroller = async (req, res) => {
     const { email, password } = req.body
